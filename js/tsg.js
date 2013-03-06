@@ -7,6 +7,7 @@ LDC.Application = (function () {
 	var canvas = null;
 	var self = null;
 	var generations = 0;
+	var pause = false;
 
 	var cellWidth = 1
 
@@ -44,7 +45,9 @@ LDC.Application = (function () {
 				ctx.fillRect (xw, yw, cellWidth, cellWidth);
 			}
 		}
-		setTimeout(run, 50);
+		if (!pause){
+			setTimeout(run, 50);
+		}
 	};
 
 	return {
@@ -53,6 +56,12 @@ LDC.Application = (function () {
 		xlen : 0,
 		ylen : 0,
 
+		stop : function () {
+			pause = !pause;
+			if (!pause) {
+				run();
+			}
+		},
 		main : function (w,x,y) {
 			self = this;
 			self.utils = LDC.Utils();
