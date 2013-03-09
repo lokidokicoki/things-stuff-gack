@@ -1,1 +1,2 @@
-canvas { border: 1px solid black;}
+canvas { float:left; border: 1px solid black;}
+#toolbar {padding: 4px; display: inline-block;}
