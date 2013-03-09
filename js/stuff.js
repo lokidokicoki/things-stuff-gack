@@ -71,6 +71,12 @@ LDC.StuffManager = (function () {
 			self = this;
 			populate();
 		},
+		serialize : function () {
+			return JSON.stringify(grid);
+		},
+		load : function (g) {
+			grid = g;
+		},
 		hasStuff : function (x,y) {
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
 				return false;
