@@ -7,17 +7,9 @@ LDC.Application = (function () {
 	var canvas = null;
 	var self = null;
 	var generations = 0;
-	var pause = false;
+	var running = true;
 
 	var cellWidth = 1
-
-	function run () {
-		draw();
-
-		tsg.stuffMgr.incubate();
-
-		generations++;
-	};
 
 	function incubate () {
 	};
@@ -45,8 +37,8 @@ LDC.Application = (function () {
 				ctx.fillRect (xw, yw, cellWidth, cellWidth);
 			}
 		}
-		if (!pause){
-			setTimeout(run, 50);
+		if (running){
+			setTimeout(tsg.run, 50);
 		}
 	};
 
@@ -56,14 +48,67 @@ LDC.Application = (function () {
 		xlen : 0,
 		ylen : 0,
 
-		stop : function () {
-			pause = !pause;
-			if (!pause) {
-				run();
+		pause : function () {
+			running = !running;
+			if (running) {
+				$('#pause').button("option", "icons", { primary: "ui-icon-pause" });
+				self.run();
+			}else{
+				$('#pause').button("option", "icons", { primary: "ui-icon-play" });
 			}
 		},
+		save : function () {
+			var resume = running;
+			if (resume){
+				self.pause();
+			}
+			var g = self.stuffMgr.serialize();
+			localStorage.setItem("ldc.tsg.stuff", g);
+			localStorage.setItem("ldc.tsg.generations", generations);
+			if (resume){
+				self.pause();
+			}
+		},
+		load : function () {
+			var resume = running;
+			if (resume){
+				self.pause();
+			}
+			var g = null;
+			try{
+				generations = parseInt(localStorage.getItem("ldc.tsg.generations"), 10);
+				$('#generations').html(generations);
+				g = localStorage.getItem("ldc.tsg.stuff");
+				g = JSON.parse(g);
+				self.stuffMgr.load(g);
+				draw();
+			}catch (e){
+				console.debug(e);
+			}
+			if (resume){
+				self.pause();
+			}
+		},
+		run : function () {
+			draw();
+
+			tsg.stuffMgr.incubate();
+
+			generations++;
+			$('#generations').html(generations);
+		},
+
 		main : function (w,x,y) {
 			self = this;
+			$('#pause').button({text:false, icons: { primary: "ui-icon-pause" }}).click(function () {self.pause();});
+			$('#save').button({text:false, icons: { primary: "ui-icon-gear" }}).click(function () {self.save();});
+			$('#load').button({text:false, icons: { primary: "ui-icon-extlink" }}).click(function () {self.load();});
+			if (Modernizr.localstorage) {
+				// window.localStorage is available!
+			} else {
+				// no native support for HTML5 storage :(
+				// maybe try dojox.storage or a third-party solution
+			}
 			self.utils = LDC.Utils();
 			self.stuffMgr = LDC.StuffManager();
 			canvas = document.getElementById('petri');
