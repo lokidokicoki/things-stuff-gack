@@ -38,17 +38,6 @@ LDC.StuffManager = (function () {
 		}
 		
 		dish[nx][ny] = new LDC.Stuff();
-		/*
-		if (tsg.stuffMgr.hasStuff(x-1,y-1)) {count++}else{tsg.stuffMgr.add(dish, x-1,y-1);}
-		if (tsg.stuffMgr.hasStuff(x,y-1)) {count++}else{tsg.stuffMgr.add(dish, x,y-1);}
-		if (tsg.stuffMgr.hasStuff(x+1,y-1)) {count++}else{tsg.stuffMgr.add(dish, x+1,y-1);}
-		if (tsg.stuffMgr.hasStuff(x-1,y)) {count++}else{tsg.stuffMgr.add(dish, x-1,y);}
-		if (tsg.stuffMgr.hasStuff(x+1,y)) {count++}else{tsg.stuffMgr.add(dish, x+1,y);}
-		if (tsg.stuffMgr.hasStuff(x-1,y+1)) {count++}else{tsg.stuffMgr.add(dish, x-1,y+1);}
-		if (tsg.stuffMgr.hasStuff(x,y+1)) {count++}else{tsg.stuffMgr.add(dish, x,y+1);}
-		if (tsg.stuffMgr.hasStuff(x+1,y+1)) {count++}else{tsg.stuffMgr.add(dish, x+1,y+1);}
-		*/
-
 	};
 
 	// initial populate of grid
@@ -90,6 +79,11 @@ LDC.StuffManager = (function () {
 			}
 			return s;
 		},
+		killStuff : function (x,y){
+			var stuff = grid[x][y];
+			delete stuff;
+			grid[x][y] = null;
+		},
 		add : function (dish, x,y) {
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
 				return false;
@@ -105,7 +99,7 @@ LDC.StuffManager = (function () {
 					var stuff = grid[x][y];
 					if (stuff && stuff !== undefined){
 						next[x][y] = stuff;
-						if (stuff.age%3 == 0) {
+						if (stuff.age%20 == 0) {
 							spawn(x,y, next);
 						}
 						if (check(x,y)){
@@ -113,7 +107,7 @@ LDC.StuffManager = (function () {
 						}
 						stuff.age++;
 						
-						if (stuff.age >= 10) {
+						if (stuff.age >= 100) {
 							delete stuff;
 							next[x][y]=null;
 						}
@@ -127,9 +121,9 @@ LDC.StuffManager = (function () {
 			var stuff = grid[x][y];
 			if (stuff && stuff !== undefined){
 				var age = stuff.age;
-				if (age <= 3) {
+				if (age <= 30) {
 					ctx.fillStyle = "rgb(0,255,0)";
-				}else if (age <=6) { 
+				}else if (age <=60) { 
 					ctx.fillStyle = "rgb(0,128,0)";
 				}else{
 					ctx.fillStyle = "rgb(0,64,0)";
