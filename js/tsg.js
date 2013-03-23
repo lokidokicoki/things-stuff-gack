@@ -24,6 +24,10 @@ LDC.Application = (function () {
 				ctx.fillStyle = "rgb(0,0,0)";
 
 				ctx = tsg.stuffMgr.draw(ctx, x,y);
+				var xw = x*cellWidth;
+				var yw = y*cellWidth;
+				ctx.fillRect (xw, yw, cellWidth, cellWidth);
+				ctx = tsg.thingMgr.draw(ctx, x,y);
 				/*
 				var cell = grid[x][y];
 				if (cell === 1){
@@ -32,9 +36,19 @@ LDC.Application = (function () {
 					ctx.fillStyle = "rgb(0,0,0)";
 				}
 				*/
-				var xw = x*cellWidth;
-				var yw = y*cellWidth;
-				ctx.fillRect (xw, yw, cellWidth, cellWidth);
+			}
+		}
+		for (var x = 0; x < tsg.xlen; x++){
+			for (var y = 0; y < tsg.ylen; y++){
+				ctx = tsg.thingMgr.draw(ctx, x,y);
+				/*
+				var cell = grid[x][y];
+				if (cell === 1){
+					ctx.fillStyle = "rgb("+r+","+g+","+b+")";
+				}else{
+					ctx.fillStyle = "rgb(0,0,0)";
+				}
+				*/
 			}
 		}
 		if (running){
@@ -93,6 +107,7 @@ LDC.Application = (function () {
 			draw();
 
 			tsg.stuffMgr.incubate();
+			tsg.thingMgr.incubate();
 
 			generations++;
 			$('#generations').html(generations);
@@ -100,6 +115,7 @@ LDC.Application = (function () {
 
 		main : function (w,x,y) {
 			self = this;
+			cellWidth=w;
 			$('#pause').button({text:false, icons: { primary: "ui-icon-pause" }}).click(function () {self.pause();});
 			$('#save').button({text:false, icons: { primary: "ui-icon-gear" }}).click(function () {self.save();});
 			$('#load').button({text:false, icons: { primary: "ui-icon-extlink" }}).click(function () {self.load();});
@@ -111,20 +127,33 @@ LDC.Application = (function () {
 			}
 			self.utils = LDC.Utils();
 			self.stuffMgr = LDC.StuffManager();
+			self.thingMgr = LDC.ThingManager(cellWidth);
 			canvas = document.getElementById('petri');
 			ctx = canvas.getContext('2d');
 			self.xlen = x;
 			self.ylen = y;
 			$('#petri').attr('width', w*x);
 			$('#petri').attr('height', w*y);
+			$('#petri').on('click', self.click);
 
-			cellWidth=w;
-
-			//makeGrid(self.xlen,self.ylen);
 
 			self.stuffMgr.init();
+			self.thingMgr.init(cellWidth);
 
 			draw();
+		},
+
+		click : function (e) {
+			//var x = (e.pageX - $('#petri').offsetLeft)/cellWidth;
+			//var y = (e.pageY - $('#petri').offsetTop)/cellWidth;
+			var x = e.offsetX / cellWidth;
+			var y = e.offsetY / cellWidth;
+			$('#clicked').text(x+','+y);
+
+			var thing = self.thingMgr.hasThing(x,y);
+			if (thing){
+				console.debug(thing);
+			}
 		}
 	};
 });
