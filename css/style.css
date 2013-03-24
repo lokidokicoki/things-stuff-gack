@@ -1,4 +1,7 @@
 body {background-color: #000; color: #b8ec79;}
 canvas { border-radius: 10px; float:left; border: 2px solid #b8ec79;}
 #toolbar {padding: 4px; display: inline-block;}
-button{width: 32px; height: 32px;}
+#toolbar.button{width: 32px; height: 32px;}
+.no-close .ui-dialog-titlebar-close {
+  display: none;
+}

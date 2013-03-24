@@ -123,6 +123,7 @@ LDC.Application = (function () {
 			self = this;
 			$('#info').dialog({
 				title: 'Thing Info',
+				dialogClass: "no-close",
 				autoOpen:false,
 				resizable: false,
 				buttons:[
