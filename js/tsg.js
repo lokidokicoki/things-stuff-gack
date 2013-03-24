@@ -8,6 +8,7 @@ LDC.Application = (function () {
 	var self = null;
 	var generations = 0;
 	var running = true;
+	var tolerance = 2;
 
 	var cellWidth = 1
 
@@ -27,7 +28,7 @@ LDC.Application = (function () {
 				var xw = x*cellWidth;
 				var yw = y*cellWidth;
 				ctx.fillRect (xw, yw, cellWidth, cellWidth);
-				ctx = tsg.thingMgr.draw(ctx, x,y);
+				//ctx = tsg.thingMgr.draw(ctx, x,y);
 				/*
 				var cell = grid[x][y];
 				if (cell === 1){
@@ -38,9 +39,9 @@ LDC.Application = (function () {
 				*/
 			}
 		}
-		for (var x = 0; x < tsg.xlen; x++){
-			for (var y = 0; y < tsg.ylen; y++){
-				ctx = tsg.thingMgr.draw(ctx, x,y);
+		//for (var x = 0; x < tsg.xlen; x++){
+	//		for (var y = 0; y < tsg.ylen; y++){
+				ctx = tsg.thingMgr.draw(ctx);
 				/*
 				var cell = grid[x][y];
 				if (cell === 1){
@@ -49,8 +50,8 @@ LDC.Application = (function () {
 					ctx.fillStyle = "rgb(0,0,0)";
 				}
 				*/
-			}
-		}
+	//		}
+	//	}
 		if (running){
 			setTimeout(tsg.run, 50);
 		}
@@ -115,6 +116,20 @@ LDC.Application = (function () {
 
 		main : function (w,x,y) {
 			self = this;
+			$('#info').dialog({
+				title: 'Thing Info',
+				autoOpen:false,
+				resizable: false,
+				buttons:[
+					{
+						text:'OK',
+						click: function() {
+          					$( this ).dialog( "close" );
+        				}
+					}
+				]
+			});
+
 			cellWidth=w;
 			$('#pause').button({text:false, icons: { primary: "ui-icon-pause" }}).click(function () {self.pause();});
 			$('#save').button({text:false, icons: { primary: "ui-icon-gear" }}).click(function () {self.save();});
@@ -143,6 +158,12 @@ LDC.Application = (function () {
 			draw();
 		},
 
+
+		info : function (thing) {
+				$('#info-uid').html(thing.uid);
+				$('#info-energy').html(thing.energy);
+				$('#info-position').html(thing.position[0]+','+thing.position[1]);
+		},
 		click : function (e) {
 			//var x = (e.pageX - $('#petri').offsetLeft)/cellWidth;
 			//var y = (e.pageY - $('#petri').offsetTop)/cellWidth;
@@ -150,9 +171,12 @@ LDC.Application = (function () {
 			var y = e.offsetY / cellWidth;
 			$('#clicked').text(x+','+y);
 
-			var thing = self.thingMgr.hasThing(x,y);
-			if (thing){
-				console.debug(thing);
+			var nearest = self.thingMgr.nearest([x,y]);
+			if (nearest && nearest[1] < tolerance*cellWidth){
+				var thing = nearest[0];
+				thing.selected = true;
+				self.info(thing);
+				$('#info').dialog('open');
 			}
 		}
 	};
