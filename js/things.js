@@ -1,7 +1,7 @@
 var LDC = LDC || {};
 
 LDC.Thing = function (uid,x,y) {
-	this.uid = uid;
+	this.uid = 'T'+uid;
 	this.age = 0;
 	this.energy = 300;
 	this.speed = 1;
@@ -138,11 +138,11 @@ LDC.ThingManager = (function () {
 					var fill='';
 					var energy = thing.energy;
 					if (energy > 200) {
-						ctx.fillStyle = "rgb(255,"+select+",0)";
+						ctx.fillStyle = "rgb(255,"+select+","+select+")";
 					}else if (energy > 100) { 
-						ctx.fillStyle = "rgb(128,"+select+",0)";
+						ctx.fillStyle = "rgb(128,"+select+","+select+")";
 					}else{
-						ctx.fillStyle = "rgb(64,"+select+",0)";
+						ctx.fillStyle = "rgb(64,"+select+","+select+")";
 					}
 					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 1*scale, 0, rad360);
 					ctx.fill();
