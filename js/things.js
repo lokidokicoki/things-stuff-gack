@@ -58,6 +58,12 @@ LDC.ThingManager = (function () {
 			populate();	
 		},
 
+		serialize : function () {
+			return JSON.stringify(store);
+		},
+		load : function (g) {
+			store = g;
+		},
 		incubate : function () {
 			for (var uid in store){
 				var thing = store[uid];
