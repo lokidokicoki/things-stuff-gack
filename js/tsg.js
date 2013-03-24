@@ -77,8 +77,10 @@ LDC.Application = (function () {
 			if (resume){
 				self.pause();
 			}
-			var g = self.stuffMgr.serialize();
-			localStorage.setItem("ldc.tsg.stuff", g);
+			var s = self.stuffMgr.serialize();
+			var t = self.thingMgr.serialize();
+			localStorage.setItem("ldc.tsg.stuff", s);
+			localStorage.setItem("ldc.tsg.things", t);
 			localStorage.setItem("ldc.tsg.generations", generations);
 			if (resume){
 				self.pause();
@@ -96,6 +98,9 @@ LDC.Application = (function () {
 				g = localStorage.getItem("ldc.tsg.stuff");
 				g = JSON.parse(g);
 				self.stuffMgr.load(g);
+				g = localStorage.getItem("ldc.tsg.things");
+				g = JSON.parse(g);
+				self.thingMgr.load(g);
 				draw();
 			}catch (e){
 				console.debug(e);
