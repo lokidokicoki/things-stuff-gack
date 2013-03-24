@@ -11,14 +11,14 @@ LDC.StuffManager = (function () {
 
 	function check(x,y){
 		var count = 0;
-		if (tsg.stuffMgr.hasStuff(x-1,y-1)) {count++}
-		if (tsg.stuffMgr.hasStuff(x,y-1)) {count++}
-		if (tsg.stuffMgr.hasStuff(x+1,y-1)) {count++}
-		if (tsg.stuffMgr.hasStuff(x-1,y)) {count++}
-		if (tsg.stuffMgr.hasStuff(x+1,y)) {count++}
-		if (tsg.stuffMgr.hasStuff(x-1,y+1)) {count++}
-		if (tsg.stuffMgr.hasStuff(x,y+1)) {count++}
-		if (tsg.stuffMgr.hasStuff(x+1,y+1)) {count++}
+		if (tsg.stuffMgr.hasStuff([x-1,y-1])) {count++}
+		if (tsg.stuffMgr.hasStuff([x,y-1])) {count++}
+		if (tsg.stuffMgr.hasStuff([x+1,y-1])) {count++}
+		if (tsg.stuffMgr.hasStuff([x-1,y])) {count++}
+		if (tsg.stuffMgr.hasStuff([x+1,y])) {count++}
+		if (tsg.stuffMgr.hasStuff([x-1,y+1])) {count++}
+		if (tsg.stuffMgr.hasStuff([x,y+1])) {count++}
+		if (tsg.stuffMgr.hasStuff([x+1,y+1])) {count++}
 		if (count > 6){
 			return true;
 		}else{
@@ -33,7 +33,7 @@ LDC.StuffManager = (function () {
 		if (nx < 0 || ny < 0 || nx >= tsg.xlen || ny >= tsg.ylen){
 			return false;
 		}
-		if (tsg.stuffMgr.hasStuff(nx,ny)){
+		if (tsg.stuffMgr.hasStuff([nx,ny])){
 			return false;
 		}
 		
@@ -66,7 +66,8 @@ LDC.StuffManager = (function () {
 		load : function (g) {
 			grid = g;
 		},
-		hasStuff : function (x,y) {
+		hasStuff : function (point) {
+			var x = point[0]; var y = point[1];
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
 				return false;
 			}
@@ -79,11 +80,13 @@ LDC.StuffManager = (function () {
 			}
 			return s;
 		},
-		killStuff : function (x,y){
+		killStuff : function (point){
+			var x = point[0]; var y = point[1];
 			var stuff = grid[x][y];
 			delete stuff;
 			grid[x][y] = null;
 		},
+
 		add : function (dish, x,y) {
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
 				return false;
