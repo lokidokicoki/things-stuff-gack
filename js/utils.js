@@ -4,6 +4,9 @@ LDC.Utils = (function () {
 	var self = null;
 
 	return {
+		init : function (){
+			self = this;
+		},
 		makeGrid : function (x,y) {
 			// make grid
 			var grid = [];
@@ -16,6 +19,9 @@ LDC.Utils = (function () {
 			return grid;
 		},
 
+		coinFlip : function (){
+			return self.getRandomInt(0,1);
+		},
 		/**
 		 * Apparently cheaper than pow
 		 */
