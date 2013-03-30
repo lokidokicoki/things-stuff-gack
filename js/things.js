@@ -8,6 +8,10 @@ LDC.Thing = function (uid,x,y) {
 	this.eaten = false;
 	this.position = [x,y];
 	this.selected = false;
+	// expression of genes, choose highest value (dominant)
+	this.traits = {speed:1, tumble:1, efficiency:1};
+	this.genes = [{speed:0, tumble:0, efficiency:0}, {speed:0, tumble:0, efficiency:0}];
+	this.noFood = 0;
 };
 
 LDC.ThingManager = (function () {
@@ -17,6 +21,9 @@ LDC.ThingManager = (function () {
 	var counter = 0;
 	var store = {}; //where all thing instance live
 
+	/**
+	 * thing movement
+	 */
 	function move(thing) {
 		var x = thing.position[0] + (tsg.utils.getRandomInt(0,thing.speed) *  tsg.utils.plusOrMinus());
 		var y = thing.position[1] + (tsg.utils.getRandomInt(0,thing.speed) *  tsg.utils.plusOrMinus());
@@ -25,6 +32,9 @@ LDC.ThingManager = (function () {
 		thing.energy -= thing.speed;
 	};
 
+	/**
+	 * Prototype spawn function
+	 */
 	function spawn (x,y,dish) {
 		var nx = x + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
 		var ny = y + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
@@ -37,33 +47,56 @@ LDC.ThingManager = (function () {
 		store[thing.uid] = thing;
 	};
 
-	// initial populate of grid
+	/**
+	 * initial populating of grid
+	 */
 	function populate () {
 		for (var y = 0; y < tsg.ylen; y++){
 			for (var x = 0; x < tsg.xlen; x++){
 				var val = tsg.utils.getRandomInt(0,2000);
 				if (val === 5){
 					var thing = new LDC.Thing(counter++, x,y);
-					store[thing.uid] = thing;
 
+					store[thing.uid] = thing;
 				}
 			}
 		}
 	};
 
 	return {
+		/**
+		 * Initialise thing manager
+		 * calls populate
+		 */
 		init : function (cellWidth) {
 			self = this;
 			scale = cellWidth;
 			populate();	
 		},
 
-		serialize : function () {
+		/**
+		 * Stringify store
+		 * @return string data
+		 */
+		save : function () {
 			return JSON.stringify(store);
 		},
-		load : function (g) {
-			store = g;
+
+		/**
+		 * Set store data external source
+		 * @param data new thing store
+		 */
+		load : function (data) {
+			store = data;
 		},
+
+		/**
+		 * Incubate the Things.
+		 * Each thing gets to do the following:
+		 * - eat or find food
+		 * - shag another Thing
+		 * - die
+		 */
 		incubate : function () {
 			for (var uid in store){
 				var thing = store[uid];
@@ -97,22 +130,12 @@ LDC.ThingManager = (function () {
 			}
 		},
 
-		hasThing : function (point) {
-			var thing = null;
-			for (var uid in store){
-				var t = store[uid];
-				if (t.position[0] == point[0] && t.position[1] == point[1])	{
-					thing = t;
-					break;
-				}
-			}
-			return thing;
-		},
-
-		sqr : function (v) {
-			return v*v;
-		},
-
+		/**
+		 * Find the Thing nearest to the passed point.
+		 * Also, 'deselects' the things.
+		 * @param point [x,y]
+		 * @result array containing [Tihng, distance]
+		 */
 		nearest : function (point) {
 			var minima = 99999999;
 			var result = null;
@@ -121,7 +144,7 @@ LDC.ThingManager = (function () {
 				thing.selected = false;
 				var x2 = Math.abs(point[0] - thing.position[0]);
 				var y2 = Math.abs(point[1] - thing.position[1]);
-				var dist = Math.sqrt(self.sqr(x2) + self.sqr(y2));
+				var dist = Math.sqrt(tsg.utils.sqr(x2) + tsg.utils.sqr(y2));
 				if (dist < minima) {
 					minima = dist;
 					result = [thing, dist];	
@@ -131,6 +154,9 @@ LDC.ThingManager = (function () {
 			return result;
 		},
 
+		/**
+		 * Draw the things
+		 */
 		draw : function (ctx, x,y) {
 			for (var uid in store){
 				var thing = store[uid];
@@ -150,7 +176,7 @@ LDC.ThingManager = (function () {
 					}else{
 						ctx.fillStyle = "rgb(64,"+select+","+select+")";
 					}
-					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 1*scale, 0, rad360);
+					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 2*scale, 0, rad360);
 					ctx.fill();
 				}
 			}

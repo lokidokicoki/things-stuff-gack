@@ -9,16 +9,13 @@ LDC.Application = (function () {
 	var generations = 0;
 	var running = true;
 	var tolerance = 2;
-
 	var cellWidth = 1
 
-	function incubate () {
-	};
+	/**
+ 	 * Wrapper call aournd internal draw functions
+	 */
 	function draw () {
-		var r = 200;//getRandomInt(0, 255);
-		var g = 0;//getRandomInt(0, 255);
-		var b = 0;//getRandomInt(0, 255);
-
+		// loop over grid and draw Stuffs
 		for (var x = 0; x < tsg.xlen; x++){
 			for (var y = 0; y < tsg.ylen; y++){
 				// clear cell
@@ -28,30 +25,12 @@ LDC.Application = (function () {
 				var xw = x*cellWidth;
 				var yw = y*cellWidth;
 				ctx.fillRect (xw, yw, cellWidth, cellWidth);
-				//ctx = tsg.thingMgr.draw(ctx, x,y);
-				/*
-				var cell = grid[x][y];
-				if (cell === 1){
-					ctx.fillStyle = "rgb("+r+","+g+","+b+")";
-				}else{
-					ctx.fillStyle = "rgb(0,0,0)";
-				}
-				*/
 			}
 		}
-		//for (var x = 0; x < tsg.xlen; x++){
-	//		for (var y = 0; y < tsg.ylen; y++){
-				ctx = tsg.thingMgr.draw(ctx);
-				/*
-				var cell = grid[x][y];
-				if (cell === 1){
-					ctx.fillStyle = "rgb("+r+","+g+","+b+")";
-				}else{
-					ctx.fillStyle = "rgb(0,0,0)";
-				}
-				*/
-	//		}
-	//	}
+
+		// draw the Things
+		ctx = tsg.thingMgr.draw(ctx);
+
 		if (running){
 			setTimeout(tsg.run, 50);
 		}
@@ -63,6 +42,9 @@ LDC.Application = (function () {
 		xlen : 0,
 		ylen : 0,
 
+		/**
+		 * pause/.play the action
+		 */
 		pause : function () {
 			running = !running;
 			if (running) {
@@ -72,13 +54,17 @@ LDC.Application = (function () {
 				$('#pause').button("option", "icons", { primary: "ui-icon-play" });
 			}
 		},
+
+		/**
+		 * Save data to local storage
+		 */
 		save : function () {
 			var resume = running;
 			if (resume){
 				self.pause();
 			}
-			var s = self.stuffMgr.serialize();
-			var t = self.thingMgr.serialize();
+			var s = self.stuffMgr.save();
+			var t = self.thingMgr.save();
 			localStorage.setItem("ldc.tsg.stuff", s);
 			localStorage.setItem("ldc.tsg.things", t);
 			localStorage.setItem("ldc.tsg.generations", generations);
@@ -86,6 +72,10 @@ LDC.Application = (function () {
 				self.pause();
 			}
 		},
+
+		/**
+		 * Load data from storage
+		 */
 		load : function () {
 			var resume = running;
 			if (resume){
@@ -109,6 +99,10 @@ LDC.Application = (function () {
 				self.pause();
 			}
 		},
+
+		/**
+		 * Run the simulation.
+		 */
 		run : function () {
 			draw();
 
@@ -119,7 +113,12 @@ LDC.Application = (function () {
 			$('#generations').html(generations);
 		},
 
-		main : function (w,x,y) {
+		/**
+		 * @param cw cell width
+		 * @param w width of dish
+		 * @param h height of dish
+		 */
+		main : function (cw,w,h) {
 			self = this;
 			$('#info').dialog({
 				title: 'Thing Info',
@@ -136,7 +135,6 @@ LDC.Application = (function () {
 				]
 			});
 
-			cellWidth=w;
 			$('#pause').button({text:false, icons: { primary: "ui-icon-pause" }}).click(function () {self.pause();});
 			$('#save').button({text:false, icons: { primary: "ui-icon-gear" }}).click(function () {self.save();});
 			$('#load').button({text:false, icons: { primary: "ui-icon-extlink" }}).click(function () {self.load();});
@@ -151,12 +149,12 @@ LDC.Application = (function () {
 			self.thingMgr = LDC.ThingManager(cellWidth);
 			canvas = document.getElementById('petri');
 			ctx = canvas.getContext('2d');
-			self.xlen = x;
-			self.ylen = y;
-			$('#petri').attr('width', w*x);
-			$('#petri').attr('height', w*y);
+			cellWidth=cw;
+			self.xlen = w;
+			self.ylen = h;
+			$('#petri').attr('width', cw*w);
+			$('#petri').attr('height', cw*h);
 			$('#petri').on('click', self.click);
-
 
 			self.stuffMgr.init();
 			self.thingMgr.init(cellWidth);
@@ -164,13 +162,19 @@ LDC.Application = (function () {
 			draw();
 		},
 
-
+		/**
+		 * update info panel
+		 */
 		info : function (thing) {
-				$('#info-uid').html(thing.uid);
-				$('#info-energy').html(thing.energy);
-				$('#info-position').html(thing.position[0]+','+thing.position[1]);
+			$('#info-uid').html(thing.uid);
+			$('#info-energy').html(thing.energy);
+			$('#info-position').html(thing.position[0]+','+thing.position[1]);
 		},
 
+		/**
+		 * Click handler. 
+		 * Find nearest thing, open info panel
+		 */
 		click : function (e) {
 			var x = e.offsetX / cellWidth;
 			var y = e.offsetY / cellWidth;

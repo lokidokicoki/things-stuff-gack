@@ -2,13 +2,16 @@ var LDC = LDC || {};
 
 LDC.Stuff = function () {
 	this.age = 0;
-//	this.position = [0,0];
 };
 
 LDC.StuffManager = (function () {
 	var self = null;
 	var grid = null; // where all the 'stuff' instances live
 
+	/**
+	 * Check neighbouring cells for Stuff instances.
+	 * If count > 6, return true, else false
+	 */
 	function check(x,y){
 		var count = 0;
 		if (tsg.stuffMgr.hasStuff([x-1,y-1])) {count++}
@@ -26,7 +29,14 @@ LDC.StuffManager = (function () {
 		}
 
 	};
-	function spawn (x,y,dish, attempt) {
+
+	/**
+	 * Spawn a new Stuff instance at coordinates, but only if space is unoccupied
+	 * @param x
+	 * @param y
+	 * @param dish
+	 */
+	function spawn (x,y,dish) {
 		var nx = x + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
 		var ny = y + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
 		//console.debug(x, y, nx,ny);
@@ -40,7 +50,9 @@ LDC.StuffManager = (function () {
 		dish[nx][ny] = new LDC.Stuff();
 	};
 
-	// initial populate of grid
+	/**
+	 * Initial populating of the grid with Stuff
+	 */
 	function populate () {
 		grid = tsg.utils.makeGrid(tsg.xlen, tsg.ylen);
 
@@ -56,16 +68,36 @@ LDC.StuffManager = (function () {
 	};
 
 	return {
+		/**
+		 * Initialise Stuff Manager, calls populate
+		 */
 		init : function () {
 			self = this;
 			populate();
 		},
-		serialize : function () {
+
+		/**
+		 * Stringify store
+		 * @return string data
+		 */
+		save : function () {
 			return JSON.stringify(grid);
 		},
-		load : function (g) {
-			grid = g;
+
+		
+		/**
+		 * Set store data external source
+		 * @param data new grid
+		 */
+		load : function (data) {
+			grid = data;
 		},
+
+		/**
+		 * Is there a Stuff at this point?
+		 * @param point [x,y]
+		 * @return Stuff or false
+		 */
 		hasStuff : function (point) {
 			var x = point[0]; var y = point[1];
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
@@ -80,6 +112,10 @@ LDC.StuffManager = (function () {
 			}
 			return s;
 		},
+
+		/**
+		 * Kill Stuff instance at this point.
+		 */
 		killStuff : function (point){
 			var x = point[0]; var y = point[1];
 			var stuff = grid[x][y];
@@ -87,6 +123,9 @@ LDC.StuffManager = (function () {
 			grid[x][y] = null;
 		},
 
+		/**
+		 * Add Stuff instance at this point
+		 */
 		add : function (dish, x,y) {
 			if (x < 0 || y < 0 || x >= tsg.xlen || y >= tsg.ylen){
 				return false;
@@ -94,6 +133,9 @@ LDC.StuffManager = (function () {
 			dish[x][y] = new LDC.Stuff();
 		},
 
+		/**
+		 * Incubate the Stuffs
+		 */
 		incubate : function () {
 			var next = tsg.utils.makeGrid(tsg.xlen, tsg.ylen);
 
@@ -120,6 +162,10 @@ LDC.StuffManager = (function () {
 
 			grid = next;
 		},
+
+		/**
+		 * Draw the Stuffs
+		 */
 		draw : function (ctx, x,y) {
 			var stuff = grid[x][y];
 			if (stuff && stuff !== undefined){
