@@ -95,9 +95,10 @@ LDC.ThingManager = (function () {
 	function spawn (ancestor) {
 		var nx = ancestor.position[0];
 		var ny = ancestor.position[1];
-		ancestor.energy -= 50;
+		ancestor.energy -= 100;
 		var thing = new LDC.Thing(counter++, nx, ny);
-		thing.energy = 50;
+		thing.ancestry = ancestor.ancestry + 'S'+ ancestor.uid
+		thing.energy = 100;
 		store[thing.uid] = thing;
 	};
 	
