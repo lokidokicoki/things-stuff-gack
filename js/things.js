@@ -136,6 +136,12 @@ LDC.ThingManager = (function () {
 				var val = tsg.utils.getRandomInt(0,2000);
 				if (val === 5){
 					var thing = new LDC.Thing(counter++, x,y);
+					/*
+					for (var trait in thing.traits){
+						var kicker = (tsg.utils.getRandomInt(0,100) * tsg.utils.plusOrMinus())/100);
+						thing.traits[trait] = thing.traits[trait] * kicker; 
+					}
+					*/
 
 					store[thing.uid] = thing;
 				}
