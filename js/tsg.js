@@ -170,9 +170,8 @@ LDC.Application = (function () {
 				$('#info-energy').html(thing.energy);
 				$('#info-position').html(thing.position[0]+','+thing.position[1]);
 		},
+
 		click : function (e) {
-			//var x = (e.pageX - $('#petri').offsetLeft)/cellWidth;
-			//var y = (e.pageY - $('#petri').offsetTop)/cellWidth;
 			var x = e.offsetX / cellWidth;
 			var y = e.offsetY / cellWidth;
 			$('#clicked').text(x+','+y);
