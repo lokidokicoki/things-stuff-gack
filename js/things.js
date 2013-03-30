@@ -92,16 +92,19 @@ LDC.ThingManager = (function () {
 	/**
 	 * Prototype spawn function
 	 */
-	function spawn (x,y,dish) {
-		var nx = x + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
-		var ny = y + (tsg.utils.getRandomInt(0,1) *  tsg.utils.plusOrMinus());
-		//console.debug(x, y, nx,ny);
-		if (nx < 0 || ny < 0 || nx >= tsg.xlen || ny >= tsg.ylen){
-			return false;
-		}
-		
+	function spawn (ancestor) {
+		var nx = ancestor.position[0];
+		var ny = ancestor.position[1];
+		ancestor.energy -= 50;
 		var thing = new LDC.Thing(counter++, nx, ny);
+		thing.energy = 50;
 		store[thing.uid] = thing;
+	};
+	
+	function breed (mum, dad){
+		if (mum.energy > 100 && dad.energy > 100) {
+			console.debug('breed: mum:'+mum.uid+', dad:'+dad.uid);
+		}
 	};
 
 	/**
@@ -159,16 +162,20 @@ LDC.ThingManager = (function () {
 				var thing = store[uid];
 				if (thing && thing !== undefined){
 					// spawn
-					/*
-					if (thing.age%15 == 0) {
-						spawn(x,y, next);
+					var nearest = self.nearest(thing.position, thing);
+					if (nearest[1] < 2){
+						breed(thing, nearest[0]);
+					}else{
+						// this is asexual reproduction
+						if (thing.energy > 50 && (thing.age+1)%100==0) {
+							spawn(thing);
+						}
 					}
-					*/
 
 					// eat
 					thing.eaten = false;
 					if (tsg.stuffMgr.hasStuff(thing.position)){
-						thing.energy+=3;
+						thing.energy += (5 * thing.traits.efficiency);
 						thing.eaten = true;
 						thing.noFood = 0;
 						tsg.stuffMgr.killStuff(thing.position);
@@ -201,13 +208,18 @@ LDC.ThingManager = (function () {
 		 * @param point [x,y]
 		 * @result array containing [Tihng, distance]
 		 */
-		nearest : function (point) {
+		nearest : function (point, exclude) {
 			var minima = 99999999;
 			var result = null;
 			for (var uid in store){
 				var thing = store[uid];
+				if (exclude && exclude !== undefined && exclude.uid == thing.uid){
+					continue;
+				}
 				if (thing && thing !== undefined){
-					thing.selected = false;
+					if (exclude == undefined){
+						thing.selected = false;
+					}
 					var x2 = Math.abs(point[0] - thing.position[0]);
 					var y2 = Math.abs(point[1] - thing.position[1]);
 					var dist = Math.sqrt(tsg.utils.sqr(x2) + tsg.utils.sqr(y2));
@@ -243,7 +255,7 @@ LDC.ThingManager = (function () {
 					}else{
 						ctx.fillStyle = "rgb(64,"+select+","+select+")";
 					}
-					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 2*scale, 0, rad360);
+					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 1.5*scale, 0, rad360);
 					ctx.fill();
 				}
 			}
