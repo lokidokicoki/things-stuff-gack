@@ -169,6 +169,8 @@ LDC.Application = (function () {
 			$('#info-uid').html(thing.uid);
 			$('#info-energy').html(thing.energy);
 			$('#info-position').html(thing.position[0]+','+thing.position[1]);
+			$('#info-direction').html(thing.direction);
+			$('#info-nofood').html(thing.noFood);
 		},
 
 		/**
