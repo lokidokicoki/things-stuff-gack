@@ -144,7 +144,7 @@ LDC.StuffManager = (function () {
 					var stuff = grid[x][y];
 					if (stuff && stuff !== undefined){
 						next[x][y] = stuff;
-						if (stuff.age%20 == 0) {
+						if (stuff.age%30 == 0) {
 							spawn(x,y, next);
 						}
 						if (check(x,y)){
