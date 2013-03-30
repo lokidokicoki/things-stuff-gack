@@ -9,9 +9,9 @@ LDC.Thing = function (uid,x,y) {
 	this.selected = false;
 	// expression of genes, choose highest value (dominant)
 	this.traits = {speed:1, tumble:10, hunt:30, efficiency:1};
-	this.genes = [{speed:0, tumble:0, efficiency:0}, {speed:0, tumble:0, efficiency:0}];
 	this.direction = 0;
 	this.noFood = 0;
+	this.ancestry = '';
 };
 
 LDC.ThingManager = (function () {
