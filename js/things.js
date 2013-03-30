@@ -104,7 +104,26 @@ LDC.ThingManager = (function () {
 	
 	function breed (mum, dad){
 		if (mum.energy > 100 && dad.energy > 100) {
-			console.debug('breed: mum:'+mum.uid+', dad:'+dad.uid);
+			console.debug('breed: mum:'+mum.uid+':'+mum.position+', dad:'+dad.uid+':'+dad.position);
+			var genes = {}
+			for (var trait in mum.traits){
+				if (tsg.utils.coinFlip() == 1){
+					genes[trait] = mum.traits[trait];
+				}else{
+					genes[trait] = dad.traits[trait];
+				}
+			}
+
+			var nx = mum.position[0];
+			var ny = mum.position[1];
+			var thing = new LDC.Thing(counter++, nx, ny);
+			store[thing.uid] = thing;
+			thing.ancestry = 'M' + mum.uid + 'D' + dad.uid;
+			thing.traits = genes;
+			thing.selected = true;
+			thing.energy = 100;
+			mum.energy -= 100;
+			dad.energy -= 100;
 		}
 	};
 
