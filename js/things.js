@@ -4,13 +4,13 @@ LDC.Thing = function (uid,x,y) {
 	this.uid = 'T'+uid;
 	this.age = 0;
 	this.energy = 300;
-	this.speed = 1;
 	this.eaten = false;
 	this.position = [x,y];
 	this.selected = false;
 	// expression of genes, choose highest value (dominant)
-	this.traits = {speed:1, tumble:1, efficiency:1};
+	this.traits = {speed:1, tumble:10, hunt:30, efficiency:1};
 	this.genes = [{speed:0, tumble:0, efficiency:0}, {speed:0, tumble:0, efficiency:0}];
+	this.direction = 0;
 	this.noFood = 0;
 };
 
@@ -24,12 +24,69 @@ LDC.ThingManager = (function () {
 	/**
 	 * thing movement
 	 */
-	function move(thing) {
-		var x = thing.position[0] + (tsg.utils.getRandomInt(0,thing.speed) *  tsg.utils.plusOrMinus());
-		var y = thing.position[1] + (tsg.utils.getRandomInt(0,thing.speed) *  tsg.utils.plusOrMinus());
+	function tumble(thing) {
+		var nx = thing.position[0] + (tsg.utils.getRandomInt(0,thing.traits.speed) *  tsg.utils.plusOrMinus());
+		var ny = thing.position[1] + (tsg.utils.getRandomInt(0,thing.traits.speed) *  tsg.utils.plusOrMinus());
 		
-		thing.position =[x,y]
-		thing.energy -= thing.speed;
+		if (nx >= 0 || ny >= 0 || nx < tsg.xlen || ny < tsg.ylen){
+			thing.position = [nx,ny];
+		}
+		thing.energy -= thing.traits.speed;
+		thing.direction = 0;
+	};
+
+	/**
+	 * thing movement
+	 */
+	function hunt(thing) {
+		// pick a direction, stay on this course until food or wall.
+		if (thing.direction == 0){
+			thing.direction = tsg.utils.getRandomInt(1,8);
+		}
+
+		var x = 0;
+		var y = 0;
+		switch (thing.direction){
+			case 1:
+				x=1;
+				break;
+			case 2:
+				x=1;
+				y=1;
+				break;
+			case 3:
+				y=1;
+				break;
+			case 4:
+				x=-1;
+				y=1;
+				break;
+			case 5:
+				x=-1;
+				break;
+			case 6:
+				x=-1;
+				y=-1;
+				break;
+			case 7:
+				y=-1;
+				break;
+			case 8:
+				x=1;
+				y=-1;
+				break;
+			default:
+				break;
+		}
+
+		var nx = thing.position[0] + x;
+		var ny = thing.position[1] + y;
+		if (nx >= 0 || ny >= 0 || nx < tsg.xlen || ny < tsg.ylen){
+			thing.position = [nx,ny];
+		}else{
+			thing.direction = 0;
+		}
+		thing.energy -= thing.traits.speed;
 	};
 
 	/**
@@ -113,9 +170,17 @@ LDC.ThingManager = (function () {
 					if (tsg.stuffMgr.hasStuff(thing.position)){
 						thing.energy+=3;
 						thing.eaten = true;
+						thing.noFood = 0;
 						tsg.stuffMgr.killStuff(thing.position);
 					}else{
-						move(thing);
+						thing.noFood++;
+						if (thing.noFood < thing.traits.tumble){
+							tumble(thing);
+						} else if (thing.noFood < thing.traits.hunt) {
+							hunt(thing);
+						} else {
+							thing.noFood=0;
+						}
 					}
 
 					// shag
@@ -123,7 +188,7 @@ LDC.ThingManager = (function () {
 					
 					// die
 					if (thing.energy < 0) {
-						store[thing.uid] = null;
+						delete store[thing.uid];
 						delete thing;
 					}
 				}
@@ -141,13 +206,15 @@ LDC.ThingManager = (function () {
 			var result = null;
 			for (var uid in store){
 				var thing = store[uid];
-				thing.selected = false;
-				var x2 = Math.abs(point[0] - thing.position[0]);
-				var y2 = Math.abs(point[1] - thing.position[1]);
-				var dist = Math.sqrt(tsg.utils.sqr(x2) + tsg.utils.sqr(y2));
-				if (dist < minima) {
-					minima = dist;
-					result = [thing, dist];	
+				if (thing && thing !== undefined){
+					thing.selected = false;
+					var x2 = Math.abs(point[0] - thing.position[0]);
+					var y2 = Math.abs(point[1] - thing.position[1]);
+					var dist = Math.sqrt(tsg.utils.sqr(x2) + tsg.utils.sqr(y2));
+					if (dist < minima) {
+						minima = dist;
+						result = [thing, dist];	
+					}
 				}
 			}
 
