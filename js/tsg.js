@@ -157,6 +157,7 @@ LDC.Application = (function () {
 			$('#petri').on('click', self.click);
 
 			self.stuffMgr.init();
+			self.utils.init();
 			self.thingMgr.init(cellWidth);
 
 			draw();
@@ -171,6 +172,11 @@ LDC.Application = (function () {
 			$('#info-position').html(thing.position[0]+','+thing.position[1]);
 			$('#info-direction').html(thing.direction);
 			$('#info-nofood').html(thing.noFood);
+			$('#info-speed').html(thing.traits.speed);
+			$('#info-tumble').html(thing.traits.tumble);
+			$('#info-hunt').html(thing.traits.hunt);
+			$('#info-efficiency').html(thing.traits.efficiency);
+			$('#info-ancestry').html(thing.ancestry);
 		},
 
 		/**
