@@ -7,6 +7,7 @@ LDC.Stuff = function () {
 LDC.StuffManager = (function () {
 	var self = null;
 	var grid = null; // where all the 'stuff' instances live
+	var winter = 0;
 
 	/**
 	 * Check neighbouring cells for Stuff instances.
@@ -139,6 +140,18 @@ LDC.StuffManager = (function () {
 		incubate : function () {
 			var next = tsg.utils.makeGrid(tsg.xlen, tsg.ylen);
 
+			// Stuff has 'seasons'
+			// halt growth every 400 ticks for 100 ticks
+			if (winter > 0){
+				winter--;
+				return;
+			}
+
+			var season = tsg.getTicks() % 300;
+			if (season == 0){
+				winter = 100;
+			}
+
 			for (var x = 0; x < tsg.xlen; x++){
 				for (var y = 0; y < tsg.ylen; y++){
 					var stuff = grid[x][y];
@@ -152,7 +165,7 @@ LDC.StuffManager = (function () {
 						}
 						stuff.age++;
 						
-						if (stuff.age >= 100) {
+						if (stuff.age >= 120) {
 							delete stuff;
 							next[x][y]=null;
 						}
@@ -171,11 +184,11 @@ LDC.StuffManager = (function () {
 			if (stuff && stuff !== undefined){
 				var age = stuff.age;
 				if (age <= 30) {
-					ctx.fillStyle = "rgb(0,255,0)";
-				}else if (age <=60) { 
 					ctx.fillStyle = "rgb(0,128,0)";
-				}else{
+				}else if (age <=60) { 
 					ctx.fillStyle = "rgb(0,64,0)";
+				}else{
+					ctx.fillStyle = "rgb(0,32,0)";
 				}
 			}
 			return ctx;
