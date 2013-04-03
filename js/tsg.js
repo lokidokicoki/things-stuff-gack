@@ -6,7 +6,7 @@ LDC.Application = (function () {
 	var ctx = null;
 	var canvas = null;
 	var self = null;
-	var generations = 0;
+	var ticks = 0;
 	var running = true;
 	var tolerance = 2;
 	var cellWidth = 1
@@ -67,7 +67,7 @@ LDC.Application = (function () {
 			var t = self.thingMgr.save();
 			localStorage.setItem("ldc.tsg.stuff", s);
 			localStorage.setItem("ldc.tsg.things", t);
-			localStorage.setItem("ldc.tsg.generations", generations);
+			localStorage.setItem("ldc.tsg.ticks", ticks);
 			if (resume){
 				self.pause();
 			}
@@ -83,8 +83,8 @@ LDC.Application = (function () {
 			}
 			var g = null;
 			try{
-				generations = parseInt(localStorage.getItem("ldc.tsg.generations"), 10);
-				$('#generations').html(generations);
+				ticks = parseInt(localStorage.getItem("ldc.tsg.ticks"), 10);
+				$('#ticks').html(ticks);
 				g = localStorage.getItem("ldc.tsg.stuff");
 				g = JSON.parse(g);
 				self.stuffMgr.load(g);
@@ -109,8 +109,12 @@ LDC.Application = (function () {
 			tsg.stuffMgr.incubate();
 			tsg.thingMgr.incubate();
 
-			generations++;
-			$('#generations').html(generations);
+			ticks++;
+			$('#ticks').html(ticks);
+		},
+
+		getTicks : function () {
+			return ticks;
 		},
 
 		/**
