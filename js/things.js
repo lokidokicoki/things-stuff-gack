@@ -12,6 +12,7 @@ LDC.Thing = function (uid,x,y) {
 	this.direction = 0;
 	this.noFood = 0;
 	this.ancestry = '';
+	this.kid = true;
 };
 
 LDC.ThingManager = (function () {
@@ -99,6 +100,9 @@ LDC.ThingManager = (function () {
 		var thing = new LDC.Thing(counter++, nx, ny);
 		thing.ancestry = ancestor.ancestry + 'S'+ ancestor.uid
 		thing.energy = 100;
+		for (var t in ancestor.traits){
+			thing.traits[t] = ancestor.traits[t];
+		}
 		store[thing.uid] = thing;
 	};
 	
@@ -120,7 +124,7 @@ LDC.ThingManager = (function () {
 			store[thing.uid] = thing;
 			thing.ancestry = 'M' + mum.uid + 'D' + dad.uid;
 			thing.traits = genes;
-			thing.selected = true;
+			thing.child = true;
 			thing.energy = 100;
 			mum.energy -= 100;
 			dad.energy -= 100;
@@ -136,12 +140,11 @@ LDC.ThingManager = (function () {
 				var val = tsg.utils.getRandomInt(0,2000);
 				if (val === 5){
 					var thing = new LDC.Thing(counter++, x,y);
-					/*
 					for (var trait in thing.traits){
-						var kicker = (tsg.utils.getRandomInt(0,100) * tsg.utils.plusOrMinus())/100);
-						thing.traits[trait] = thing.traits[trait] * kicker; 
+						var kicker = (tsg.utils.getRandomInt(0,200))/100;
+						var value = thing.traits[trait] * kicker;
+						thing.traits[trait] = value;
 					}
-					*/
 
 					store[thing.uid] = thing;
 				}
@@ -218,6 +221,9 @@ LDC.ThingManager = (function () {
 
 					// shag
 					thing.age++;
+					if (thing.age > 15){
+						thing.kid=false;
+					}
 					
 					// die
 					if (thing.energy < 0) {
@@ -232,7 +238,7 @@ LDC.ThingManager = (function () {
 		 * Find the Thing nearest to the passed point.
 		 * Also, 'deselects' the things.
 		 * @param point [x,y]
-		 * @result array containing [Tihng, distance]
+		 * @result array containing [Thing, distance]
 		 */
 		nearest : function (point, exclude) {
 			var minima = 99999999;
@@ -267,19 +273,23 @@ LDC.ThingManager = (function () {
 				var thing = store[uid];
 				if (thing && thing !== undefined){
 					var select = 0;
+					var kid = 0;
 					if (thing.selected){
 						select = 255;
 						tsg.info(thing);
+					}
+					if (thing.kid){
+						kid = 255
 					}
 					ctx.beginPath();
 					var fill='';
 					var energy = thing.energy;
 					if (energy > 200) {
-						ctx.fillStyle = "rgb(255,"+select+","+select+")";
+						ctx.fillStyle = "rgb(255,"+kid+","+select+")";
 					}else if (energy > 100) { 
-						ctx.fillStyle = "rgb(128,"+select+","+select+")";
+						ctx.fillStyle = "rgb(128,"+kid+","+select+")";
 					}else{
-						ctx.fillStyle = "rgb(64,"+select+","+select+")";
+						ctx.fillStyle = "rgb(64,"+kid+","+select+")";
 					}
 					ctx.arc(thing.position[0]*scale,thing.position[1]*scale, 1.5*scale, 0, rad360);
 					ctx.fill();
