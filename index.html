@@ -12,7 +12,7 @@
 		<script src="libs/modernizr-latest.js"></script>
 		<script>
 			$(document).ready(function () {
-				tsg.main(2,600,225);
+				tsg.main(2,300,225);
 			});
 		</script>
 	</head>
@@ -24,7 +24,7 @@
 			<button id="load">load</button>
 		</div>
 		<p>
-		Generations: <span id="generations">0</span> Click @ <span id="clicked">0,0</span>
+		Turns: <span id="ticks">0</span> Click @ <span id="clicked">0,0</span>
 		</p>
 		<canvas id="petri"></canvas>
 		<div id="info">
@@ -37,7 +37,7 @@
 			Tumble:<span id="info-tumble"></span><br>
 			Hunt:<span id="info-hunt"></span><br>
 			Efficiency:<span id="info-efficiency"></span><br>
-			Ancestry:<span id="info-ancestry"></span><br>
+			Ancestry:<textarea disabled id="info-ancestry" value=""/><br>
 		</div>
 	</body>
 </html>
