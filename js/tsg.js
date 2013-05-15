@@ -32,7 +32,7 @@ LDC.Application = (function () {
 		ctx = tsg.thingMgr.draw(ctx);
 
 		if (running){
-			setTimeout(tsg.run, 50);
+			setTimeout(tsg.run, 200);
 		}
 	};
 
@@ -181,6 +181,7 @@ LDC.Application = (function () {
 			$('#info-hunt').html(thing.traits.hunt);
 			$('#info-efficiency').html(thing.traits.efficiency);
 			$('#info-ancestry').html(thing.ancestry);
+			$('#info-age').html(thing.age);
 		},
 
 		/**
