@@ -59,7 +59,7 @@ LDC.StuffManager = (function () {
 
 		for (var y = 0; y < tsg.ylen; y++){
 			for (var x = 0; x < tsg.xlen; x++){
-				var val = tsg.utils.getRandomInt(0,1000);
+				var val = tsg.utils.getRandomInt(0,250);
 				if (val === 5){
 					grid[x][y] = new LDC.Stuff();
 				}
@@ -163,7 +163,11 @@ LDC.StuffManager = (function () {
 						if (check(x,y)){
 							stuff.age=999;
 						}
-						stuff.age++;
+						if (winter > 0) {
+							stuff.age += 50;
+						}else{
+							stuff.age++;
+						}
 						
 						if (stuff.age >= 120) {
 							delete stuff;
