@@ -26,8 +26,8 @@ LDC.ThingManager = (function () {
 	 * thing movement
 	 */
 	function tumble(thing) {
-		var nx = thing.position[0] + (tsg.utils.getRandomInt(0,thing.traits.speed) *  tsg.utils.plusOrMinus());
-		var ny = thing.position[1] + (tsg.utils.getRandomInt(0,thing.traits.speed) *  tsg.utils.plusOrMinus());
+		var nx = thing.position[0] + (Math.floor(tsg.utils.getRandomInt(0,thing.traits.speed)) *  tsg.utils.plusOrMinus());
+		var ny = thing.position[1] + (Math.floor(tsg.utils.getRandomInt(0,thing.traits.speed)) *  tsg.utils.plusOrMinus());
 		
 		if (nx >= 0 || ny >= 0 || nx < tsg.xlen || ny < tsg.ylen){
 			thing.position = [nx,ny];
@@ -80,8 +80,8 @@ LDC.ThingManager = (function () {
 				break;
 		}
 
-		var nx = thing.position[0] + x;
-		var ny = thing.position[1] + y;
+		var nx = thing.position[0] + Math.floor(x * thing.traits.speed);
+		var ny = thing.position[1] + Math.floor(y * thing.traits.speed);
 		if (nx >= 0 || ny >= 0 || nx < tsg.xlen || ny < tsg.ylen){
 			thing.position = [nx,ny];
 		}else{
